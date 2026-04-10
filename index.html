@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Design Portfolio of Umair Muhammad — Senior Mechanical Design Engineer specializing in robotics, sheet metal, CAD, FEA, and prototyping.">
+<title>Umair Muhammad — Design Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+/* ── RESET ─────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --orange:#E07B20;--orange2:#F5922E;--teal:#1E9E8E;
+  --dark:#0F1117;--dark2:#181C26;--dark3:#1F2435;--card:#232840;
+  --line:rgba(255,255,255,0.07);--text:#E8EAF0;--muted:#8A90A8;
+  --font-head:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;
+  --radius:12px;--transition:0.3s cubic-bezier(0.4,0,0.2,1);
+}
+html{scroll-behavior:smooth}
+body{background:var(--dark);color:var(--text);font-family:var(--font-body);font-size:16px;line-height:1.65;overflow-x:hidden}
+a{color:var(--teal);text-decoration:none}
+a:hover{color:var(--orange)}
+
+/* ── EDITOR TOOLBAR ────────────────────────────────────── */
+#editor-bar{
+  position:fixed;bottom:0;left:0;right:0;z-index:9999;
+  background:rgba(15,17,23,0.97);
+  border-top:2px solid var(--orange);
+  backdrop-filter:blur(20px);
+  padding:0;
+  transition:height 0.3s ease;
+  font-family:var(--font-body);
+}
+#editor-toggle{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 20px;cursor:pointer;
+  background:var(--orange);color:#fff;
+  font-family:var(--font-head);font-weight:700;font-size:0.82rem;
+  letter-spacing:0.08em;text-transform:uppercase;
+  border:none;width:100%;text-align:left;
+  justify-content:space-between;
+}
+#editor-toggle:hover{background:var(--orange2)}
+#editor-panel{
+  display:none;padding:16px 20px 20px;
+  max-height:320px;overflow-y:auto;
+}
+#editor-panel.open{display:block}
+.editor-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.etab{
+  padding:6px 16px;border-radius:6px;border:1px solid var(--line);
+  background:var(--dark3);color:var(--muted);cursor:pointer;
+  font-size:0.8rem;font-weight:600;font-family:var(--font-head);
+  text-transform:uppercase;letter-spacing:0.06em;
+  transition:all 0.2s;
+}
+.etab.active,.etab:hover{background:var(--orange);color:#fff;border-color:var(--orange)}
+
+.editor-pane{display:none}
+.editor-pane.active{display:block}
+
+/* IMAGE EDITOR */
+.img-editor-grid{display:flex;flex-wrap:wrap;gap:12px}
+.img-editor-item{
+  background:var(--dark3);border:1px solid var(--line);
+  border-radius:8px;padding:10px;display:flex;gap:12px;align-items:center;
+  min-width:260px;flex:1 1 260px;
+}
+.img-editor-thumb{
+  width:60px;height:50px;object-fit:contain;border-radius:4px;
+  background:var(--dark2);flex-shrink:0;
+}
+.img-editor-controls{flex:1}
+.img-label{font-size:0.75rem;font-weight:600;color:var(--teal);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em}
+.slider-row{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.slider-row label{font-size:0.72rem;color:var(--muted);width:38px;flex-shrink:0}
+.slider-row input[type=range]{flex:1;accent-color:var(--orange);height:3px;cursor:pointer}
+.slider-row span{font-size:0.72rem;color:var(--text);width:36px;text-align:right;font-weight:600}
+
+/* TEXT EDITOR */
+.text-editor-list{display:flex;flex-direction:column;gap:10px}
+.text-edit-item{
+  background:var(--dark3);border:1px solid var(--line);
+  border-radius:8px;padding:12px;
+}
+.text-edit-label{
+  font-size:0.72rem;font-weight:700;color:var(--orange);
+  text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;
+}
+.text-edit-input{
+  width:100%;background:var(--dark2);border:1px solid var(--line);
+  color:var(--text);padding:7px 10px;border-radius:6px;
+  font-size:0.88rem;font-family:var(--font-body);resize:vertical;
+  min-height:36px;transition:border-color 0.2s;
+}
+.text-edit-input:focus{outline:none;border-color:var(--teal)}
+.font-controls{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;align-items:center}
+.font-controls label{font-size:0.72rem;color:var(--muted)}
+.font-controls input[type=range]{width:90px;accent-color:var(--teal);cursor:pointer}
+.font-controls span{font-size:0.72rem;color:var(--text);font-weight:600;min-width:28px}
+.color-btn{
+  width:22px;height:22px;border-radius:4px;border:1px solid var(--line);
+  cursor:pointer;padding:0;background:none;
+}
+.color-input{width:0;height:0;opacity:0;position:absolute;pointer-events:none}
+.align-btns{display:flex;gap:4px}
+.align-btn{
+  padding:3px 8px;border-radius:4px;border:1px solid var(--line);
+  background:var(--dark2);color:var(--muted);cursor:pointer;font-size:0.75rem;
+  transition:all 0.15s;
+}
+.align-btn.active,.align-btn:hover{background:var(--teal);color:#fff;border-color:var(--teal)}
+
+/* LAYOUT EDITOR */
+.layout-editor-list{display:flex;flex-direction:column;gap:10px}
+.layout-item{
+  background:var(--dark3);border:1px solid var(--line);
+  border-radius:8px;padding:12px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+}
+.layout-label{font-size:0.78rem;font-weight:700;color:var(--text);min-width:120px}
+.layout-controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.layout-btn{
+  padding:5px 12px;border-radius:6px;border:1px solid var(--line);
+  background:var(--dark2);color:var(--muted);cursor:pointer;font-size:0.78rem;font-weight:600;
+  transition:all 0.15s;
+}
+.layout-btn.active,.layout-btn:hover{background:var(--teal);color:#fff;border-color:var(--teal)}
+
+/* EXPORT */
+.export-section{padding:8px 0;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.export-btn{
+  padding:9px 22px;border-radius:7px;border:none;cursor:pointer;
+  font-family:var(--font-head);font-weight:700;font-size:0.82rem;
+  letter-spacing:0.06em;text-transform:uppercase;
+  transition:all 0.2s;
+}
+.export-btn.primary{background:var(--orange);color:#fff}
+.export-btn.primary:hover{background:var(--orange2)}
+.export-btn.secondary{background:var(--dark3);color:var(--text);border:1px solid var(--line)}
+.export-btn.secondary:hover{border-color:var(--teal);color:var(--teal)}
+.export-note{font-size:0.78rem;color:var(--muted)}
+.export-status{font-size:0.82rem;color:var(--teal);font-weight:600;display:none}
+
+/* ── NAV ────────────────────────────────────────────────── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 4vw;height:64px;
+  background:rgba(15,17,23,0.85);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--line);
+}
+.nav-logo{font-family:var(--font-head);font-weight:800;font-size:1.1rem;letter-spacing:0.02em;color:var(--text)}
+.nav-logo span{color:var(--orange)}
+.nav-links{display:flex;gap:2rem;list-style:none;font-size:0.85rem;font-weight:500;letter-spacing:0.04em}
+.nav-links a{color:var(--muted);transition:color var(--transition);text-transform:uppercase}
+.nav-links a:hover{color:var(--orange)}
+.nav-cta{background:var(--orange);color:#fff !important;padding:8px 20px;border-radius:6px;font-weight:600;font-size:0.82rem;text-transform:uppercase;letter-spacing:0.06em;transition:background var(--transition)}
+.nav-cta:hover{background:var(--orange2) !important;color:#fff !important}
+
+/* ── HERO ───────────────────────────────────────────────── */
+#hero{min-height:100vh;display:flex;align-items:center;padding:100px 4vw 80px;
+  background:radial-gradient(ellipse 80% 60% at 70% 50%,rgba(30,158,142,0.10) 0%,transparent 60%),
+  radial-gradient(ellipse 60% 80% at 10% 80%,rgba(224,123,32,0.10) 0%,transparent 55%),var(--dark)}
+.hero-inner{max-width:1200px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.hero-tag{display:inline-block;background:rgba(224,123,32,0.15);color:var(--orange);font-family:var(--font-head);font-size:0.78rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;padding:6px 14px;border-radius:4px;border:1px solid rgba(224,123,32,0.3);margin-bottom:1.4rem}
+.hero-name{font-family:var(--font-head);font-size:clamp(2.6rem,5vw,4.4rem);font-weight:800;line-height:1.05;letter-spacing:-0.02em;margin-bottom:0.4rem}
+.hero-name em{font-style:normal;background:linear-gradient(135deg,var(--orange),var(--orange2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-title{font-family:var(--font-head);font-size:1.15rem;font-weight:600;color:var(--teal);margin-bottom:1.4rem;letter-spacing:0.01em}
+.hero-desc{color:var(--muted);font-size:1rem;max-width:480px;margin-bottom:2rem;line-height:1.75}
+.hero-actions{display:flex;gap:1rem;flex-wrap:wrap}
+.btn-primary{background:var(--orange);color:#fff;padding:12px 28px;border-radius:8px;font-family:var(--font-head);font-weight:700;font-size:0.9rem;letter-spacing:0.04em;text-transform:uppercase;transition:all var(--transition);border:none;cursor:pointer;display:inline-block}
+.btn-primary:hover{background:var(--orange2);transform:translateY(-2px);box-shadow:0 8px 30px rgba(224,123,32,0.35);color:#fff}
+.btn-outline{background:transparent;color:var(--text);padding:12px 28px;border-radius:8px;font-family:var(--font-head);font-weight:700;font-size:0.9rem;letter-spacing:0.04em;text-transform:uppercase;transition:all var(--transition);border:1.5px solid var(--line);display:inline-block}
+.btn-outline:hover{border-color:var(--teal);color:var(--teal);transform:translateY(-2px)}
+.hero-badges{display:flex;flex-wrap:wrap;gap:0.6rem;margin-top:2rem}
+.badge{background:var(--dark3);border:1px solid var(--line);padding:5px 12px;border-radius:20px;font-size:0.78rem;font-weight:500;color:var(--muted)}
+.hero-visual{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.hero-img-card{border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);background:var(--dark3);transition:transform var(--transition)}
+.hero-img-card:hover{transform:scale(1.02)}
+.hero-img-card img{width:100%;height:200px;object-fit:cover}
+.hero-img-card.tall img{height:300px}
+
+/* ── SECTIONS ───────────────────────────────────────────── */
+section{padding:80px 4vw}
+.container{max-width:1200px;margin:0 auto}
+.section-label{display:inline-flex;align-items:center;gap:10px;font-family:var(--font-head);font-size:0.75rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--orange);margin-bottom:1rem}
+.section-label::before{content:'';display:block;width:28px;height:2px;background:var(--orange)}
+.section-title{font-family:var(--font-head);font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:800;line-height:1.1;letter-spacing:-0.02em;margin-bottom:0.6rem}
+.section-sub{color:var(--muted);font-size:1rem;max-width:580px;margin-bottom:3rem;line-height:1.7}
+.divider{border:none;height:1px;background:linear-gradient(to right,transparent,var(--line),transparent);margin:0}
+
+/* ── ABOUT ──────────────────────────────────────────────── */
+#about{background:var(--dark2)}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start}
+.about-text p{color:var(--muted);margin-bottom:1rem;line-height:1.8}
+.about-text strong{color:var(--text)}
+.exp-item{display:flex;gap:16px;margin-bottom:1.6rem;padding-bottom:1.6rem;border-bottom:1px solid var(--line)}
+.exp-dot{width:10px;height:10px;border-radius:50%;background:var(--orange);margin-top:7px;flex-shrink:0}
+.exp-title{font-family:var(--font-head);font-weight:700;font-size:0.95rem;margin-bottom:3px}
+.exp-org{color:var(--teal);font-size:0.85rem;font-weight:500}
+.skills-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.skill-pill{background:var(--dark3);border:1px solid var(--line);padding:10px 16px;border-radius:8px;font-size:0.85rem;font-weight:500;display:flex;align-items:center;gap:8px;transition:border-color var(--transition),background var(--transition)}
+.skill-pill:hover{border-color:var(--teal);background:rgba(30,158,142,0.06)}
+.skill-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0}
+
+/* ── PROJECTS ───────────────────────────────────────────── */
+#projects{background:var(--dark)}
+.projects-grid{display:flex;flex-direction:column;gap:60px}
+.project-card{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start;padding:36px;background:var(--dark3);border-radius:16px;border:1px solid var(--line);transition:border-color var(--transition),box-shadow var(--transition)}
+.project-card:hover{border-color:rgba(224,123,32,0.25);box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+.project-card.reverse{direction:rtl}
+.project-card.reverse>*{direction:ltr}
+.project-num{font-family:var(--font-head);font-size:0.72rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--orange);margin-bottom:0.5rem}
+.project-title{font-family:var(--font-head);font-size:1.4rem;font-weight:800;line-height:1.15;margin-bottom:0.5rem;letter-spacing:-0.01em}
+.project-client{color:var(--teal);font-size:0.85rem;font-weight:500;margin-bottom:1rem}
+.project-desc{color:var(--muted);font-size:0.92rem;line-height:1.75;margin-bottom:1.2rem}
+.contrib-list{list-style:none;display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1.4rem}
+.contrib-list li{display:flex;gap:10px;font-size:0.88rem;color:var(--muted);line-height:1.55}
+.contrib-list li::before{content:'›';color:var(--orange);font-size:1.1rem;line-height:1.4;flex-shrink:0}
+.project-link{display:inline-flex;align-items:center;gap:6px;font-size:0.82rem;font-weight:600;color:var(--teal);border:1px solid rgba(30,158,142,0.3);padding:7px 16px;border-radius:6px;transition:all var(--transition)}
+.project-link:hover{background:rgba(30,158,142,0.12);color:var(--teal);border-color:var(--teal)}
+.img-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.img-grid-2x2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.img-grid-2 img,.img-grid-2x2 img{width:100%;height:220px;object-fit:contain;background:var(--dark2)}
+.img-single img{width:100%;max-height:400px;object-fit:contain;background:var(--dark2)}
+.img-trio{display:grid;grid-template-rows:auto auto;gap:12px}
+.img-trio .top{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.img-trio .top img{width:100%;height:180px;object-fit:contain;background:var(--dark2)}
+.img-trio .bottom img{width:100%;height:220px;object-fit:contain;background:var(--dark2)}
+.img-6grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.img-6grid img{width:100%;height:180px;object-fit:contain;background:var(--dark2)}
+
+/* ── RESEARCH ────────────────────────────────────────────── */
+#research{background:var(--dark2)}
+.research-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+.research-imgs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.research-imgs img{width:100%;height:180px;object-fit:contain;background:var(--dark3);border-radius:8px;border:1px solid var(--line)}
+.logos-row{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:1.5rem}
+.logos-row img{height:48px;width:auto;object-fit:contain;border-radius:6px;background:var(--dark3);padding:6px 10px;border:1px solid var(--line)}
+
+/* ── PROCESS ─────────────────────────────────────────────── */
+#process{background:var(--dark)}
+.process-steps{display:grid;grid-template-columns:repeat(5,1fr);gap:0;position:relative;counter-reset:step}
+.process-steps::before{content:'';position:absolute;top:28px;left:10%;right:10%;height:1px;background:linear-gradient(to right,var(--orange),var(--teal));z-index:0}
+.step{display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 12px;position:relative;z-index:1}
+.step-num{width:56px;height:56px;border-radius:50%;background:var(--dark3);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:800;font-size:1rem;color:var(--orange);margin-bottom:1rem}
+.step-title{font-family:var(--font-head);font-weight:700;font-size:0.85rem;margin-bottom:0.4rem;color:var(--text)}
+.step-desc{font-size:0.78rem;color:var(--muted);line-height:1.5}
+
+/* ── CONTACT ─────────────────────────────────────────────── */
+#contact{background:radial-gradient(ellipse 80% 60% at 30% 50%,rgba(224,123,32,0.08) 0%,transparent 60%),var(--dark2);text-align:center}
+.contact-email{font-family:var(--font-head);font-size:clamp(1.2rem,3vw,2rem);font-weight:800;color:var(--orange);margin:1.5rem 0;display:block;letter-spacing:-0.01em}
+
+/* ── FOOTER ──────────────────────────────────────────────── */
+footer{border-top:1px solid var(--line);padding:32px 4vw;display:flex;justify-content:space-between;align-items:center;font-size:0.8rem;color:var(--muted);background:var(--dark);flex-wrap:wrap;gap:12px;margin-bottom:60px}
+footer strong{color:var(--text)}
+
+/* ── EDITABLE IMG ────────────────────────────────────────── */
+.editable-img{transition:outline 0.15s,box-shadow 0.15s;cursor:pointer;border-radius:8px}
+.editable-img:hover{outline:2px solid var(--orange);box-shadow:0 0 0 4px rgba(224,123,32,0.15)}
+.editable-img.selected{outline:2px solid var(--teal) !important;box-shadow:0 0 0 4px rgba(30,158,142,0.25) !important}
+.editable-text{cursor:text;border-radius:4px;transition:background 0.15s}
+.editable-text:hover{background:rgba(255,255,255,0.04)}
+.editable-text:focus{outline:2px solid var(--teal);background:rgba(30,158,142,0.06);outline-offset:3px}
+
+/* ── REVEAL ──────────────────────────────────────────────── */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity 0.7s ease,transform 0.7s ease}
+.reveal.visible{opacity:1;transform:none}
+
+/* ── RESPONSIVE ──────────────────────────────────────────── */
+@media(max-width:900px){
+  .hero-inner,.about-grid,.project-card,.research-grid{grid-template-columns:1fr;gap:32px}
+  .project-card.reverse{direction:ltr}
+  .hero-visual,.nav-links{display:none}
+  .process-steps{grid-template-columns:1fr 1fr;gap:24px}
+  .process-steps::before{display:none}
+  .skills-grid{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  section{padding:60px 5vw}
+  .project-card{padding:24px}
+  .img-grid-2,.img-grid-2x2,.img-6grid{grid-template-columns:1fr}
+  .process-steps{grid-template-columns:1fr}
+  footer{margin-bottom:120px}
+}
+</style>
+
+<style>
+.editable-img { background: var(--dark3); min-height: 80px; }
+.editable-img.loaded { background: transparent; }
+.page-loader {
+  position: fixed; inset: 0; z-index: 99999;
+  background: #0F1117;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 16px; transition: opacity 0.5s ease;
+}
+.page-loader.done { opacity: 0; pointer-events: none; }
+.loader-bar-wrap {
+  width: 260px; height: 4px;
+  background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;
+}
+.loader-bar {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, #E07B20, #1E9E8E);
+  border-radius: 2px; transition: width 0.2s ease;
+}
+.loader-text {
+  font-family: 'Syne', sans-serif; font-size: 0.82rem;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+}
+.loader-name {
+  font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 800;
+  color: #E07B20; letter-spacing: 0.04em;
+}
+</style>
+
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">UMAIR <span>MUHAMMAD</span></div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#research">Research</a></li>
+    <li><a href="#process">Process</a></li>
+    <li><a href="#contact" class="nav-cta">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-content reveal">
+      <div class="hero-tag">Design Portfolio</div>
+      <h1 class="hero-name">UMAIR<br><em>MUHAMMAD</em></h1>
+      <p class="hero-title editable-text" contenteditable="false">Senior Mechanical Design Engineer</p>
+      <p class="hero-desc editable-text" contenteditable="false">Specializing in robotic platform design, sheet-metal fabrication, structural simulation, and precision prototyping — bridging concept to production.</p>
+      <div class="hero-actions">
+        <a href="#projects" class="btn-primary">View Projects</a>
+        <a href="#contact" class="btn-outline">Get in Touch</a>
+      </div>
+      <div class="hero-badges">
+        <span class="badge editable-text" contenteditable="false">WeGo-Robotics · South Korea</span>
+        <span class="badge editable-text" contenteditable="false">Devomech Solutions · Pakistan</span>
+        <span class="badge editable-text" contenteditable="false">GIST · MS Engineering</span>
+      </div>
+    </div>
+    <div class="hero-visual reveal">
+      <div class="hero-img-card tall"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p3_a" loading="lazy" alt="p3_a"></div>
+      <div>
+        <div class="hero-img-card" style="margin-bottom:16px"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p1_model" loading="lazy" alt="p1_model"></div>
+        <div class="hero-img-card"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p6_proto" loading="lazy" alt="p6_proto"></div>
+      </div>
+    </div>
+  </div>
+</section>
+<hr class="divider">
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <div class="section-label">About</div>
+        <h2 class="section-title editable-text" contenteditable="false">Engineer by Training,<br>Designer by Passion</h2>
+        <p class="editable-text" contenteditable="false">I'm a Senior Mechanical Design Engineer with hands-on experience building robotic systems, sensor enclosures, and industrial machinery — from initial concept through to physical prototype and production.</p>
+        <p class="editable-text" contenteditable="false">Currently pursuing an <strong>MS in Mechanical Engineering at GIST</strong>, focusing on dynamics, control systems, and system identification.</p>
+        <div style="margin-top:2rem">
+          <div class="exp-item">
+            <div class="exp-dot"></div>
+            <div>
+              <div class="exp-title editable-text" contenteditable="false">Senior Mechanical Design Engineer</div>
+              <div class="exp-org editable-text" contenteditable="false">WeGo-Robotics · South Korea</div>
+            </div>
+          </div>
+          <div class="exp-item" style="border:none;margin-bottom:0">
+            <div class="exp-dot" style="background:var(--teal)"></div>
+            <div>
+              <div class="exp-title editable-text" contenteditable="false">Mechanical Design Engineer</div>
+              <div class="exp-org editable-text" contenteditable="false">Devomech Solutions · Pakistan</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="section-label">Key Skills</div>
+        <div class="skills-grid">
+          <div class="skill-pill"><span class="skill-dot"></span><span class="editable-text" contenteditable="false">SolidWorks</span></div>
+          <div class="skill-pill"><span class="skill-dot"></span><span class="editable-text" contenteditable="false">Fusion 360</span></div>
+          <div class="skill-pill"><span class="skill-dot"></span><span class="editable-text" contenteditable="false">AutoCAD 2D / CNC</span></div>
+          <div class="skill-pill"><span class="skill-dot"></span><span class="editable-text" contenteditable="false">Ansys FEA / CFD</span></div>
+          <div class="skill-pill"><span class="skill-dot"></span><span class="editable-text" contenteditable="false">Sheet Metal Design</span></div>
+          <div class="skill-pill"><span class="skill-dot"></span><span class="editable-text" contenteditable="false">Surface Modeling</span></div>
+          <div class="skill-pill"><span class="skill-dot"></span><span class="editable-text" contenteditable="false">3D & Resin Printing</span></div>
+          <div class="skill-pill"><span class="skill-dot"></span><span class="editable-text" contenteditable="false">Injection Molding DFM</span></div>
+          <div class="skill-pill"><span class="skill-dot"></span><span class="editable-text" contenteditable="false">Python / GUI Dev</span></div>
+          <div class="skill-pill"><span class="skill-dot"></span><span class="editable-text" contenteditable="false">Electrical Wiring</span></div>
+          <div class="skill-pill"><span class="skill-dot" style="background:var(--orange)"></span><span class="editable-text" contenteditable="false">MATLAB & Simulink</span></div>
+          <div class="skill-pill"><span class="skill-dot" style="background:var(--orange)"></span><span class="editable-text" contenteditable="false">LabVIEW</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<hr class="divider">
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="container">
+    <div class="section-label">Work</div>
+    <h2 class="section-title editable-text" contenteditable="false">Selected Projects</h2>
+    <p class="section-sub editable-text" contenteditable="false">A range of industrial robotic platforms, structural enclosures, and precision mechanisms designed for real-world deployment.</p>
+    <div class="projects-grid">
+
+      <div class="project-card reveal">
+        <div class="project-info">
+          <div class="project-num">Project 01</div>
+          <h3 class="project-title editable-text" contenteditable="false">DUAL ARM System with FR-5 Robot Arms</h3>
+          <div class="project-client editable-text" contenteditable="false">Customer: KEPCO KDN</div>
+          <p class="project-desc editable-text" contenteditable="false">Developed an in-house dual-arm robotic platform with motor and linear actuators for precise arm positioning, along with safe electrical circuits for tele-operation power supply.</p>
+          <ul class="contrib-list">
+            <li class="editable-text" contenteditable="false">Analyzed existing dual-arm systems; selected mechanical and electrical components.</li>
+            <li class="editable-text" contenteditable="false">Designed sheet-metal parts: actuator cover, sensor kit enclosure, front housing.</li>
+            <li class="editable-text" contenteditable="false">Implemented step-servo motor control in Python with CW/CCW, speed, and E-Stop GUI.</li>
+            <li class="editable-text" contenteditable="false">Completed industrial relay-based electrical wiring and connections.</li>
+          </ul>
+          <a class="project-link" href="https://youtu.be/sVBeeHizY70" target="_blank">▶ Watch Project Video</a>
+        </div>
+        <div class="img-grid-2"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p1_model" loading="lazy" alt="p1_model"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p1_photo" loading="lazy" alt="p1_photo"></div>
+      </div>
+
+      <div class="project-card reverse reveal">
+        <div class="project-info">
+          <div class="project-num">Project 02</div>
+          <h3 class="project-title editable-text" contenteditable="false">DUAL ARM System with PIPER (03 Units)</h3>
+          <div class="project-client editable-text" contenteditable="false">3-Unit Custom Delivery</div>
+          <p class="project-desc editable-text" contenteditable="false">In-house dual-arm robotic platform featuring a vertical actuator for precise arm positioning during tele-operation. Delivered as three client-customized units.</p>
+          <ul class="contrib-list">
+            <li class="editable-text" contenteditable="false">Designed sheet-metal parts for low-volume production.</li>
+            <li class="editable-text" contenteditable="false">Developed Python GUI with motion control and emergency stop.</li>
+            <li class="editable-text" contenteditable="false">Tailored each of the three systems to client-specific requirements.</li>
+          </ul>
+          <a class="project-link" href="https://youtu.be/ngKz8aZktL8" target="_blank">▶ Watch Project Video</a>
+        </div>
+        <div class="img-grid-2"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p2_model" loading="lazy" alt="p2_model"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p2_gui" loading="lazy" alt="p2_gui"></div>
+      </div>
+
+      <div class="project-card reveal">
+        <div class="project-info">
+          <div class="project-num">Project 03</div>
+          <h3 class="project-title editable-text" contenteditable="false">MiR100 & UR10e Integration</h3>
+          <p class="project-desc editable-text" contenteditable="false">Fully customized sensor kit to house the UR10e OEM control box and wiring, ensuring stable robot arm operation during mobile platform movement.</p>
+          <ul class="contrib-list">
+            <li class="editable-text" contenteditable="false">Designed sheet-metal sensor kit manufacturable via fabrication.</li>
+            <li class="editable-text" contenteditable="false">Enhanced stability using high-weight structural profiles.</li>
+            <li class="editable-text" contenteditable="false">Performed electrical wiring with industrial relays.</li>
+          </ul>
+        </div>
+        <div class="img-grid-2"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p3_a" loading="lazy" alt="p3_a"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p3_b" loading="lazy" alt="p3_b"></div>
+      </div>
+
+      <div class="project-card reverse reveal">
+        <div class="project-info">
+          <div class="project-num">Project 04</div>
+          <h3 class="project-title editable-text" contenteditable="false">DOOSAN Enerbility Sensor Kit Enclosure</h3>
+          <p class="project-desc editable-text" contenteditable="false">Sensor kit enclosure with sleek aesthetics and structurally optimized internal layout, housing Orin AGX Industrial PC, power converters, and speaker.</p>
+          <ul class="contrib-list">
+            <li class="editable-text" contenteditable="false">Added structural ribs for improved stiffness and strength.</li>
+            <li class="editable-text" contenteditable="false">Performed FEA analysis to validate mechanical rigidity.</li>
+            <li class="editable-text" contenteditable="false">Utilized Bambu Lab H2D in-house 3D printing with optimized parameters.</li>
+          </ul>
+        </div>
+        <div class="img-grid-2x2"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p4_a" loading="lazy" alt="p4_a"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p4_b" loading="lazy" alt="p4_b"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p4_c" loading="lazy" alt="p4_c"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p4_d" loading="lazy" alt="p4_d"></div>
+      </div>
+
+      <div class="project-card reveal">
+        <div class="project-info">
+          <div class="project-num">Project 05</div>
+          <h3 class="project-title editable-text" contenteditable="false">Vertical Conveyor System</h3>
+          <p class="project-desc editable-text" contenteditable="false">1m-tall vertical conveyor system for educational and industrial work-automation use. High mechanical complexity requiring careful integration of structure, motion, and functionality.</p>
+          <ul class="contrib-list">
+            <li class="editable-text" contenteditable="false">Developed complete mechanical design and system layout.</li>
+            <li class="editable-text" contenteditable="false">Currently at prototyping stage; temporarily paused due to 2026 company pivot.</li>
+          </ul>
+        </div>
+        <div class="img-grid-2"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p5_a" loading="lazy" alt="p5_a"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p5_b" loading="lazy" alt="p5_b"></div>
+      </div>
+
+      <div class="project-card reverse reveal">
+        <div class="project-info">
+          <div class="project-num">Project 06</div>
+          <h3 class="project-title editable-text" contenteditable="false">Functional Mechanisms Design</h3>
+          <p class="project-desc editable-text" contenteditable="false">3D model and functional prototype development for a precision camera/sensor mounting mechanism demonstrating tilt and positioning capability.</p>
+          <ul class="contrib-list">
+            <li class="editable-text" contenteditable="false">Full 3D CAD model in SolidWorks.</li>
+            <li class="editable-text" contenteditable="false">Functional prototype manufactured and tested.</li>
+          </ul>
+        </div>
+        <div class="img-grid-2"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p6_model" loading="lazy" alt="p6_model"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p6_proto" loading="lazy" alt="p6_proto"></div>
+      </div>
+
+      <div class="project-card reveal">
+        <div class="project-info">
+          <div class="project-num">Project 07</div>
+          <h3 class="project-title editable-text" contenteditable="false">Quadruped Robot Design Concepts</h3>
+          <p class="project-desc editable-text" contenteditable="false">Multiple design concepts for mounting Nvidia AGX and battery on a quadruped robot with 8 kg payload capacity. Key challenge: balancing a heavy robotic arm while maintaining stability.</p>
+          <ul class="contrib-list">
+            <li class="editable-text" contenteditable="false">Centrally positioned all heavy components to maintain CoG balance.</li>
+            <li class="editable-text" contenteditable="false">Multiple iterations exploring different attachment strategies.</li>
+          </ul>
+        </div>
+        <div class="img-6grid"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p7_a" loading="lazy" alt="p7_a"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p7_b" loading="lazy" alt="p7_b"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p7_c" loading="lazy" alt="p7_c"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p7_d" loading="lazy" alt="p7_d"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p7_e" loading="lazy" alt="p7_e"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p7_f" loading="lazy" alt="p7_f"></div>
+      </div>
+
+      <div class="project-card reverse reveal">
+        <div class="project-info">
+          <div class="project-num">Project 08</div>
+          <h3 class="project-title editable-text" contenteditable="false">Design Projects for Value Adding</h3>
+          <p class="project-desc editable-text" contenteditable="false">Mechanical design projects focused on adding functional and commercial value — sensor heads, robotic mounts, and precision optical assemblies.</p>
+          <ul class="contrib-list">
+            <li class="editable-text" contenteditable="false">FEA-validated structural designs for load-bearing components.</li>
+            <li class="editable-text" contenteditable="false">Designed for manufacturability across multiple production methods.</li>
+          </ul>
+        </div>
+        <div class="img-grid-2x2"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p8_a" loading="lazy" alt="p8_a"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p8_b" loading="lazy" alt="p8_b"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p8_c" loading="lazy" alt="p8_c"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p8_d" loading="lazy" alt="p8_d"></div>
+      </div>
+
+      <div class="project-card reveal">
+        <div class="project-info">
+          <div class="project-num">Project 09</div>
+          <h3 class="project-title editable-text" contenteditable="false">Designs for Injection Molding</h3>
+          <p class="project-desc editable-text" contenteditable="false">Consumer and industrial enclosure designs optimized for injection molding — including the BackAware wearable device enclosure, controller housings, and electronic cases.</p>
+          <ul class="contrib-list">
+            <li class="editable-text" contenteditable="false">Draft angles, wall thickness, and parting line optimization.</li>
+            <li class="editable-text" contenteditable="false">Low-volume DFM for cost-effective production.</li>
+          </ul>
+        </div>
+        <div class="img-grid-2"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p9_b" loading="lazy" alt="p9_b"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p9_c" loading="lazy" alt="p9_c"></div>
+      </div>
+
+      <div class="project-card reverse reveal">
+        <div class="project-info">
+          <div class="project-num">Project 10</div>
+          <h3 class="project-title editable-text" contenteditable="false">Portable Baby Change Table</h3>
+          <p class="project-desc editable-text" contenteditable="false">Concept development through final product renderings for a portable baby change table — combining compact foldability with comfort and safety.</p>
+          <ul class="contrib-list">
+            <li class="editable-text" contenteditable="false">Sketches through final high-fidelity renderings.</li>
+            <li class="editable-text" contenteditable="false">Structural and ergonomic design consideration.</li>
+          </ul>
+        </div>
+        <div class="img-trio">
+          <div class="top"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p10_b" loading="lazy" alt="p10_b"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p10_c" loading="lazy" alt="p10_c"></div>
+          <div class="bottom"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p10_a" loading="lazy" alt="p10_a"></div>
+        </div>
+      </div>
+
+      <div class="project-card reveal">
+        <div class="project-info">
+          <div class="project-num">Project 11</div>
+          <h3 class="project-title editable-text" contenteditable="false">Machine Design — Ingot Surfacing System</h3>
+          <p class="project-desc editable-text" contenteditable="false">Full machine design for an industrial ingot surfacing system, including complete mechanical layout, structural frame, and subassembly integration.</p>
+          <ul class="contrib-list">
+            <li class="editable-text" contenteditable="false">Complete 2D engineering drawings for CNC machining.</li>
+            <li class="editable-text" contenteditable="false">3D assembly model with motion study.</li>
+          </ul>
+        </div>
+        <div class="img-trio">
+          <div class="top"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p11_b" loading="lazy" alt="p11_b"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p11_c" loading="lazy" alt="p11_c"></div>
+          <div class="bottom"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p11_main" loading="lazy" alt="p11_main"></div>
+        </div>
+      </div>
+
+      <div class="project-card reverse reveal">
+        <div class="project-info">
+          <div class="project-num">Project 12</div>
+          <h3 class="project-title editable-text" contenteditable="false">Regulatory Mechanism — Linear Motion Sensor</h3>
+          <p class="project-desc editable-text" contenteditable="false">Mechanical design of a regulatory mechanism for control voltage systems using a linear motion position sensor, deployed in high-frequency voltage automation.</p>
+          <ul class="contrib-list">
+            <li class="editable-text" contenteditable="false">Precision positioning mechanism with motor-driven actuation.</li>
+            <li class="editable-text" contenteditable="false">Integrated with automation PLC control system.</li>
+          </ul>
+        </div>
+        <div class="img-grid-2"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p12_a" loading="lazy" alt="p12_a"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p12_b" loading="lazy" alt="p12_b"></div>
+      </div>
+
+      <div class="project-card reveal">
+        <div class="project-info">
+          <div class="project-num">Project 13</div>
+          <h3 class="project-title editable-text" contenteditable="false">Pressure Vessel & Structures — Oil & Gas</h3>
+          <p class="project-desc editable-text" contenteditable="false">Structural and pressure vessel component design for an Oil and Gas firm — horizontal pressure vessels, access platforms, and support structures.</p>
+          <ul class="contrib-list">
+            <li class="editable-text" contenteditable="false">ASME-compliant pressure vessel design.</li>
+            <li class="editable-text" contenteditable="false">Structural steel access stairway and platform.</li>
+            <li class="editable-text" contenteditable="false">Full 3D modeling and 2D fabrication drawings.</li>
+          </ul>
+        </div>
+        <div class="img-trio">
+          <div class="top"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p13_b" loading="lazy" alt="p13_b"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p13_c" loading="lazy" alt="p13_c"></div>
+          <div class="bottom"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="p13_main" loading="lazy" alt="p13_main"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+<hr class="divider">
+
+<!-- RESEARCH -->
+<section id="research">
+  <div class="container">
+    <div class="research-grid">
+      <div class="reveal">
+        <div class="section-label">Academia</div>
+        <h2 class="section-title editable-text" contenteditable="false">MS Research Experience</h2>
+        <p class="editable-text" contenteditable="false" style="color:var(--muted);margin-bottom:1rem;line-height:1.8">Graduate research at the School of Mechanical Engineering, GIST — Dynamics &amp; Control Lab. Research focused on system identification, PID control design, and experimental validation.</p>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:0.6rem;margin-top:1rem">
+          <li style="display:flex;gap:10px;font-size:0.9rem;color:var(--muted)"><span style="color:var(--teal)">◆</span><span class="editable-text" contenteditable="false">PID Control System Design</span></li>
+          <li style="display:flex;gap:10px;font-size:0.9rem;color:var(--muted)"><span style="color:var(--teal)">◆</span><span class="editable-text" contenteditable="false">System Identification &amp; Modelling</span></li>
+          <li style="display:flex;gap:10px;font-size:0.9rem;color:var(--muted)"><span style="color:var(--teal)">◆</span><span class="editable-text" contenteditable="false">LabVIEW Data Acquisition</span></li>
+          <li style="display:flex;gap:10px;font-size:0.9rem;color:var(--muted)"><span style="color:var(--teal)">◆</span><span class="editable-text" contenteditable="false">STM32 Embedded Programming</span></li>
+          <li style="display:flex;gap:10px;font-size:0.9rem;color:var(--muted)"><span style="color:var(--teal)">◆</span><span class="editable-text" contenteditable="false">MATLAB &amp; Simulink Simulation</span></li>
+        </ul>
+        <div class="logos-row"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="res_stm32" loading="lazy" alt="res_stm32"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="res_labview" loading="lazy" alt="res_labview"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="res_matlab" loading="lazy" alt="res_matlab"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="res_solidworks" loading="lazy" alt="res_solidworks"></div>
+      </div>
+      <div class="reveal">
+        <div class="research-imgs"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="res_machine" loading="lazy" alt="res_machine"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="res_cad" loading="lazy" alt="res_cad"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="res_sysid" loading="lazy" alt="res_sysid"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="editable-img " data-key="res_matlab" loading="lazy" alt="res_matlab"></div>
+      </div>
+    </div>
+  </div>
+</section>
+<hr class="divider">
+
+<!-- PROCESS -->
+<section id="process">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:3.5rem" class="reveal">
+      <div class="section-label" style="justify-content:center;padding-left:38px">Process</div>
+      <h2 class="section-title editable-text" contenteditable="false">How I Work</h2>
+    </div>
+    <div class="process-steps reveal">
+      <div class="step"><div class="step-num">01</div><div class="step-title editable-text" contenteditable="false">Communication</div><div class="step-desc editable-text" contenteditable="false">Understand client requirements, constraints, and success criteria.</div></div>
+      <div class="step"><div class="step-num">02</div><div class="step-title editable-text" contenteditable="false">Research</div><div class="step-desc editable-text" contenteditable="false">Analyze existing systems, standards, and technical benchmarks.</div></div>
+      <div class="step"><div class="step-num">03</div><div class="step-title editable-text" contenteditable="false">Solutions</div><div class="step-desc editable-text" contenteditable="false">Generate multiple design concepts and evaluate feasibility.</div></div>
+      <div class="step"><div class="step-num">04</div><div class="step-title editable-text" contenteditable="false">3D Model &amp; Prototype</div><div class="step-desc editable-text" contenteditable="false">Build CAD models and physical prototypes for validation.</div></div>
+      <div class="step"><div class="step-num">05</div><div class="step-title editable-text" contenteditable="false">Improvements</div><div class="step-desc editable-text" contenteditable="false">Iterate based on testing feedback until requirements are met.</div></div>
+    </div>
+  </div>
+</section>
+<hr class="divider">
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container" style="display:flex;flex-direction:column;align-items:center">
+    <div class="section-label" style="justify-content:center;padding-left:38px">Contact</div>
+    <h2 class="section-title editable-text" contenteditable="false" style="text-align:center">Let's Work Together</h2>
+    <p class="editable-text" contenteditable="false" style="color:var(--muted);font-size:0.9rem;max-width:440px;margin:0 auto 1.5rem;text-align:center">Available for mechanical design projects, robotics collaborations, and consulting engagements.</p>
+    <a class="contact-email editable-text" contenteditable="false" href="/cdn-cgi/l/email-protection#c9bca4a8a0bbe7a4acaaa189aea4e7aea0babde7a8aae7a2bb"><span class="__cf_email__" data-cfemail="d9acb4b8b0abf7b4bcbab199beb4f7beb0aaadf7b8baf7b2ab">[email&#160;protected]</span></a>
+    <a href="/cdn-cgi/l/email-protection#542139353d267a3931373c1433397a333d27207a35377a3f26" class="btn-primary">Send Email</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span>© 2025 <strong>Umair Muhammad</strong>. All rights reserved.</span>
+  <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7f0a121e160d51121a1c173f18125118160c0b511e1c51140d">[email&#160;protected]</a></span>
+  <span>Built for free hosting on GitHub Pages or Netlify</span>
+</footer>
+
+<!-- ══════════════════════════════════════════════════════════
+     EDITOR TOOLBAR
+══════════════════════════════════════════════════════════ -->
+<div id="editor-bar">
+  <button id="editor-toggle" onclick="toggleEditor()">
+    <span id="toggle-label">✏️  EDIT MODE  —  Click to open editor</span>
+    <span id="toggle-arrow">▲</span>
+  </button>
+  <div id="editor-panel">
+    <div class="editor-tabs">
+      <div class="etab active" onclick="switchTab('images')">🖼 Images</div>
+      <div class="etab" onclick="switchTab('text')">✏️ Text</div>
+      <div class="etab" onclick="switchTab('layout')">⚙️ Layout</div>
+      <div class="etab" onclick="switchTab('export')">💾 Export</div>
+    </div>
+
+    <!-- IMAGES TAB -->
+    <div class="editor-pane active" id="pane-images">
+      <div class="img-editor-grid" id="img-editor-grid"></div>
+    </div>
+
+    <!-- TEXT TAB -->
+    <div class="editor-pane" id="pane-text">
+      <div class="text-editor-list" id="text-editor-list"></div>
+    </div>
+
+    <!-- LAYOUT TAB -->
+    <div class="editor-pane" id="pane-layout">
+      <div class="layout-editor-list" id="layout-editor-list"></div>
+    </div>
+
+    <!-- EXPORT TAB -->
+    <div class="editor-pane" id="pane-export">
+      <div class="export-section">
+        <button class="export-btn primary" onclick="exportHTML()">⬇ Download Updated HTML</button>
+        <button class="export-btn secondary" onclick="resetAll()">↺ Reset All Changes</button>
+        <span class="export-note">All your edits are saved in this file when you download.</span>
+        <span class="export-status" id="export-status">✓ Downloaded!</span>
+      </div>
+      <p style="font-size:0.8rem;color:var(--muted);margin-top:12px;line-height:1.6">
+        <strong style="color:var(--text)">How to add visitor tracking:</strong>
+        Sign up at <a href="https://analytics.google.com" target="_blank">analytics.google.com</a> (free), 
+        create a property, get your Measurement ID (e.g. <code style="background:var(--dark3);padding:2px 5px;border-radius:3px;font-size:0.75rem">G-XXXXXXXXXX</code>), 
+        then open this HTML file in a text editor and replace <code style="background:var(--dark3);padding:2px 5px;border-radius:3px;font-size:0.75rem">GA_MEASUREMENT_ID</code> 
+        with your real ID in the Analytics script block at the top.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ── STATE ────────────────────────────────────────────────
+let editMode = false;
+let imgSizes = {}; // key -> {width, height}
+let originalSizes = {};
+
+// ── TOGGLE EDITOR ────────────────────────────────────────
+function toggleEditor() {
+  editMode = !editMode;
+  const panel = document.getElementById('editor-panel');
+  const label = document.getElementById('toggle-label');
+  const arrow = document.getElementById('toggle-arrow');
+  panel.classList.toggle('open', editMode);
+  arrow.textContent = editMode ? '▼' : '▲';
+  label.textContent = editMode ? '✏️  EDIT MODE ACTIVE  —  Click images or text to edit' : '✏️  EDIT MODE  —  Click to open editor';
+  document.getElementById('editor-toggle').style.background = editMode ? '#1E9E8E' : 'var(--orange)';
+
+  // Enable/disable contenteditable on text elements
+  document.querySelectorAll('.editable-text').forEach(el => {
+    el.contentEditable = editMode ? 'true' : 'false';
+    if (editMode) el.style.cursor = 'text';
+    else el.style.cursor = '';
+  });
+
+  // Highlight images in edit mode
+  document.querySelectorAll('.editable-img').forEach(el => {
+    el.style.cursor = editMode ? 'pointer' : '';
+  });
+
+  if (editMode) {
+    buildImageEditor();
+    buildTextEditor();
+    buildLayoutEditor();
+  }
+}
+
+// ── TAB SWITCHING ────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.etab').forEach((t,i) => {
+    t.classList.toggle('active', ['images','text','layout','export'][i] === tab);
+  });
+  document.querySelectorAll('.editor-pane').forEach(p => p.classList.remove('active'));
+  document.getElementById('pane-' + tab).classList.add('active');
+}
+
+// ── IMAGE EDITOR ─────────────────────────────────────────
+function buildImageEditor() {
+  const grid = document.getElementById('img-editor-grid');
+  grid.innerHTML = '';
+  document.querySelectorAll('.editable-img').forEach((img, idx) => {
+    if (!img.dataset.key) return;
+    const key = img.dataset.key;
+    const cw = img.naturalWidth || img.width || 200;
+    const ch = img.naturalHeight || img.height || 150;
+    const curW = img.style.width ? parseInt(img.style.width) : (img.width || cw);
+    const curH = img.style.height ? parseInt(img.style.height) : (img.height || ch);
+    if (!originalSizes[key]) originalSizes[key] = {w: curW, h: curH};
+
+    const item = document.createElement('div');
+    item.className = 'img-editor-item';
+    item.innerHTML = `
+      <img src="${img.src}" class="img-editor-thumb" alt="">
+      <div class="img-editor-controls">
+        <div class="img-label">${key.replace(/_/g,' ')}</div>
+        <div class="slider-row">
+          <label>Width</label>
+          <input type="range" min="80" max="600" value="${curW}" 
+            oninput="updateImgSize('${key}','w',this.value)" id="w-${key}">
+          <span id="wv-${key}">${curW}px</span>
+        </div>
+        <div class="slider-row">
+          <label>Height</label>
+          <input type="range" min="60" max="500" value="${curH}"
+            oninput="updateImgSize('${key}','h',this.value)" id="h-${key}">
+          <span id="hv-${key}">${curH}px</span>
+        </div>
+      </div>`;
+    grid.appendChild(item);
+  });
+}
+
+function updateImgSize(key, dim, val) {
+  val = parseInt(val);
+  if (!imgSizes[key]) imgSizes[key] = {};
+  imgSizes[key][dim] = val;
+  document.getElementById((dim==='w'?'wv-':'hv-') + key).textContent = val + 'px';
+  document.querySelectorAll(`.editable-img[data-key="${key}"]`).forEach(img => {
+    if (dim === 'w') { img.style.width = val + 'px'; img.style.maxWidth = val + 'px'; }
+    else { img.style.height = val + 'px'; img.style.maxHeight = val + 'px'; }
+  });
+}
+
+// ── TEXT EDITOR ──────────────────────────────────────────
+function buildTextEditor() {
+  const list = document.getElementById('text-editor-list');
+  list.innerHTML = '';
+  const seen = new Set();
+  document.querySelectorAll('.editable-text').forEach((el, idx) => {
+    const text = el.textContent.trim().substring(0, 40);
+    if (seen.has(text) || text.length < 2) return;
+    seen.add(text);
+    const id = 'tel-' + idx;
+    el.dataset.editorId = id;
+    const tag = el.tagName.toLowerCase();
+    const isMulti = el.textContent.length > 60 || ['p','li'].includes(tag);
+
+    const item = document.createElement('div');
+    item.className = 'text-edit-item';
+    const fs = parseInt(window.getComputedStyle(el).fontSize);
+    const color = window.getComputedStyle(el).color;
+    const align = window.getComputedStyle(el).textAlign || 'left';
+
+    item.innerHTML = `
+      <div class="text-edit-label">${tag.toUpperCase()} — ${text}${el.textContent.length > 40 ? '…' : ''}</div>
+      ${isMulti
+        ? `<textarea class="text-edit-input" rows="2" onchange="updateText('${id}',this.value)">${el.textContent.trim()}</textarea>`
+        : `<input type="text" class="text-edit-input" value="${el.textContent.trim()}" oninput="updateText('${id}',this.value)">`
+      }
+      <div class="font-controls">
+        <label>Size</label>
+        <input type="range" min="10" max="48" value="${fs}" oninput="updateFontSize('${id}',this.value)">
+        <span id="fs-${id}">${fs}px</span>
+        <div class="align-btns">
+          <button class="align-btn ${align==='left'?'active':''}" onclick="updateAlign('${id}','left',this)">L</button>
+          <button class="align-btn ${align==='center'?'active':''}" onclick="updateAlign('${id}','center',this)">C</button>
+          <button class="align-btn ${align==='right'?'active':''}" onclick="updateAlign('${id}','right',this)">R</button>
+        </div>
+      </div>`;
+    list.appendChild(item);
+  });
+}
+
+function updateText(id, val) {
+  document.querySelectorAll(`[data-editor-id="${id}"]`).forEach(el => { el.textContent = val; });
+}
+function updateFontSize(id, val) {
+  document.querySelectorAll(`[data-editor-id="${id}"]`).forEach(el => { el.style.fontSize = val + 'px'; });
+  document.getElementById('fs-' + id).textContent = val + 'px';
+}
+function updateAlign(id, align, btn) {
+  document.querySelectorAll(`[data-editor-id="${id}"]`).forEach(el => { el.style.textAlign = align; });
+  btn.closest('.align-btns').querySelectorAll('.align-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ── LAYOUT EDITOR ────────────────────────────────────────
+function buildLayoutEditor() {
+  const list = document.getElementById('layout-editor-list');
+  list.innerHTML = '';
+  const imgGrids = [
+    {sel: '.img-grid-2', label: 'Image Grids (2-col)', options: ['1 column','2 columns','3 columns']},
+    {sel: '.img-grid-2x2', label: 'Image Grids (2x2)', options: ['1 column','2 columns']},
+    {sel: '.img-6grid', label: 'Image Grids (6-up)', options: ['2 columns','3 columns']},
+  ];
+  imgGrids.forEach(({sel, label, options}) => {
+    const grids = document.querySelectorAll(sel);
+    if (!grids.length) return;
+    const item = document.createElement('div');
+    item.className = 'layout-item';
+    const btns = options.map(o => {
+      const cols = o.split(' ')[0] === '1' ? '1' : o.split(' ')[0] === '2' ? '2' : '3';
+      return `<button class="layout-btn" onclick="setGridCols('${sel}',${cols},this)">${o}</button>`;
+    }).join('');
+    item.innerHTML = `<div class="layout-label">${label}</div><div class="layout-controls">${btns}</div>`;
+    list.appendChild(item);
+  });
+
+  // Project card layout
+  const pcItem = document.createElement('div');
+  pcItem.className = 'layout-item';
+  pcItem.innerHTML = `
+    <div class="layout-label">Project Cards</div>
+    <div class="layout-controls">
+      <button class="layout-btn" onclick="setProjectLayout('side-by-side',this)">Side by Side</button>
+      <button class="layout-btn" onclick="setProjectLayout('stacked',this)">Stacked</button>
+    </div>`;
+  list.appendChild(pcItem);
+
+  // Image fit mode
+  const fitItem = document.createElement('div');
+  fitItem.className = 'layout-item';
+  fitItem.innerHTML = `
+    <div class="layout-label">Image Fit</div>
+    <div class="layout-controls">
+      <button class="layout-btn active" onclick="setImgFit('contain',this)">Contain (full image)</button>
+      <button class="layout-btn" onclick="setImgFit('cover',this)">Cover (fill box)</button>
+      <button class="layout-btn" onclick="setImgFit('fill',this)">Stretch</button>
+    </div>`;
+  list.appendChild(fitItem);
+}
+
+function setGridCols(sel, cols, btn) {
+  document.querySelectorAll(sel).forEach(el => {
+    el.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  });
+  btn.closest('.layout-controls').querySelectorAll('.layout-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function setProjectLayout(mode, btn) {
+  document.querySelectorAll('.project-card').forEach(el => {
+    el.style.gridTemplateColumns = mode === 'stacked' ? '1fr' : '1fr 1fr';
+  });
+  btn.closest('.layout-controls').querySelectorAll('.layout-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function setImgFit(fit, btn) {
+  document.querySelectorAll('.editable-img').forEach(img => { img.style.objectFit = fit; });
+  btn.closest('.layout-controls').querySelectorAll('.layout-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ── EXPORT ───────────────────────────────────────────────
+function exportHTML() {
+  // Disable edit mode first
+  document.querySelectorAll('.editable-text').forEach(el => { el.contentEditable = 'false'; });
+  // Hide toolbar in export
+  document.getElementById('editor-bar').style.display = 'none';
+  const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+  document.getElementById('editor-bar').style.display = '';
+  const blob = new Blob([html], {type: 'text/html'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'portfolio_umair_muhammad_edited.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  const s = document.getElementById('export-status');
+  s.style.display = 'inline';
+  setTimeout(() => { s.style.display = 'none'; }, 3000);
+  // Re-enable if still in edit mode
+  if (editMode) document.querySelectorAll('.editable-text').forEach(el => { el.contentEditable = 'true'; });
+}
+
+function resetAll() {
+  if (!confirm('Reset all changes? This will reload the page.')) return;
+  location.reload();
+}
+
+// ── SCR
